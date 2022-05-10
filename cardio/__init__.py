@@ -1,4 +1,3 @@
-from typing import Union
 import random
 
 class Card():
@@ -12,6 +11,9 @@ class Card():
 
 class Deck():
 
+    def get_name(self):
+        return "Deck"
+
     def print_cards(self):
         print([getName(card) for card in self.cards])
 
@@ -19,20 +21,24 @@ class Deck():
         self.cards = cards
 
 class Player(Deck):
+    
+    def get_name(self):
+        return self.name
 
     def print_cards(self, short: bool=False):
-        print([getName(card, True) if short else getName(card) for card in self.cards])
+        print([get_card_name(card, True) if short else get_card_name(card) for card in self.cards])
         
-    def __init__(self, name: str):
+    def __init__(self, name: str, is_human: True):
         self.name = name
         self.cards = []
+        self.is_human = is_human
 
 ranks: list = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Jack", "Queen", "King", "Ace"]
 suits: list = ["Spades", "Clubs", "Hearts", "Diamonds"]
 short_ranks: list = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "J", "Q", "K", "A"]
 short_suits: list = ["♤", "♧", "♥", "♦"]
 
-def generateDeck() -> Deck:
+def generate_deck() -> Deck:
     cards = [Card(rank, suit) for rank in range(len(ranks)) for suit in range(len(suits))]
     return Deck(cards)
 
@@ -41,13 +47,16 @@ def shuffle(deck: Deck) -> Deck:
     random.shuffle(new_cards)
     return Deck(new_cards)
 
-def getName(card: Card, short: bool=False) -> str:
+def get_card_name(card: Card, short: bool=False) -> str:
     abt = card.about()
     if short:
         return f"{short_ranks[abt[0]]}{short_suits[abt[1]]}"
     else:
         return f"{ranks[abt[0]]} of {suits[abt[1]]}"
 
-def move_card(giver, taker):
-    taken = giver.cards.pop()
-    taker.cards.append(taken)
+def move_card(giver, taker, count: int=1):
+    print(f"{taker.get_name()} takes {count} card{'s' if count != 1 else ''} from {giver.get_name()}")
+
+    for i in range(count):
+        taken = giver.cards.pop()
+        taker.cards.append(taken)
